@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "voidstone:nullstone",
+    "voidstone:null_cobblestone",
+    "voidstone:void_ruin_bricks",
+    "voidstone:void_crystal"
+  ]
+}
