@@ -1,6 +1,7 @@
 package dev.blue_gamerwolf.voidstone.common.event;
 
 import dev.blue_gamerwolf.voidstone.VoidstoneMod;
+import dev.blue_gamerwolf.voidstone.common.block.ModBlocks;
 import dev.blue_gamerwolf.voidstone.common.enchantment.ModEnchantments;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -15,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -34,6 +36,8 @@ public final class VoidstoneArmorEvents {
 
     private static final String DATA_PREFIX = "voidstone_return_";
     private static final double VOID_TRIGGER_Y = -64.0D;
+    private static final int GATEWAY_X = 16;
+    private static final int GATEWAY_Z = 16;
 
     private VoidstoneArmorEvents() {
     }
@@ -64,7 +68,7 @@ public final class VoidstoneArmorEvents {
             return;
         }
 
-        // Preserve the most recent grounded return point, rather than the falling coordinates.
+        ensureGateway(destination);
         BlockPos spawn = findSafeSpawn(destination);
         player.fallDistance = 0.0F;
         player.teleportTo(destination, spawn.getX() + 0.5D, spawn.getY(),
@@ -116,6 +120,44 @@ public final class VoidstoneArmorEvents {
         player.fallDistance = 0.0F;
         player.clearFire();
         return true;
+    }
+
+    /**
+     * A single, fixed gateway site prevents duplicate gateways being created for
+     * every player. The activation state is preserved once the gateway is repaired.
+     */
+    private static void ensureGateway(ServerLevel level) {
+        int surfaceY = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, GATEWAY_X, GATEWAY_Z);
+        BlockPos gatewayPos = new BlockPos(GATEWAY_X, surfaceY, GATEWAY_Z);
+        if (level.getBlockState(gatewayPos).is(ModBlocks.LOST_GATEWAY.get())) {
+            return;
+        }
+
+        // Clear only the gateway's footprint above the terrain.
+        for (int x = GATEWAY_X - 2; x <= GATEWAY_X + 2; x++) {
+            for (int y = surfaceY; y <= surfaceY + 5; y++) {
+                for (int z = GATEWAY_Z - 1; z <= GATEWAY_Z + 1; z++) {
+                    level.setBlock(new BlockPos(x, y, z), Blocks.AIR.defaultBlockState(), 3);
+                }
+            }
+        }
+
+        // Damaged obsidian arch: deliberately broken at the upper-right corner.
+        for (int y = surfaceY; y <= surfaceY + 4; y++) {
+            level.setBlock(new BlockPos(GATEWAY_X - 2, y, GATEWAY_Z),
+                    (y == surfaceY + 2 ? Blocks.CRYING_OBSIDIAN : Blocks.OBSIDIAN).defaultBlockState(), 3);
+            if (y != surfaceY + 4) {
+                level.setBlock(new BlockPos(GATEWAY_X + 2, y, GATEWAY_Z),
+                        Blocks.OBSIDIAN.defaultBlockState(), 3);
+            }
+        }
+        for (int x = GATEWAY_X - 2; x <= GATEWAY_X + 2; x++) {
+            if (x != GATEWAY_X + 2) {
+                level.setBlock(new BlockPos(x, surfaceY + 4, GATEWAY_Z),
+                        Blocks.OBSIDIAN.defaultBlockState(), 3);
+            }
+        }
+        level.setBlock(gatewayPos, ModBlocks.LOST_GATEWAY.get().defaultBlockState(), 3);
     }
 
     private static boolean hasDimensionalNetherite(ServerPlayer player) {
