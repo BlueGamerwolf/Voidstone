@@ -51,7 +51,7 @@ public final class VoidSkyRenderer {
         poseStack.pushPose();
         // Cancel the camera translation so the stars behave like a distant celestial sphere.
         poseStack.translate(camera.x, camera.y, camera.z);
-        PoseStack.Pose pose = poseStack.last();
+        org.joml.Matrix4f pose = poseStack.last().pose();
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();

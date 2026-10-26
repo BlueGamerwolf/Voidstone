@@ -9,7 +9,8 @@ import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConf
 
 public final class VoidShrineFeature extends Feature<NoneFeatureConfiguration> {
     public VoidShrineFeature() { super(NoneFeatureConfiguration.CODEC); }
-    @Override public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
+    @Override
+    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
         WorldGenLevel level = context.level();
         BlockPos origin = context.origin();
         if (!level.getBlockState(origin.below()).is(ModBlocks.NULLSTONE.get())) return false;
