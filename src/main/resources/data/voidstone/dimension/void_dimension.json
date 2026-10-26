@@ -1,11 +1,1 @@
-{
-  "type": "minecraft:the_end",
-  "generator": {
-    "type": "minecraft:noise",
-    "settings": "minecraft:end",
-    "biome_source": {
-      "type": "minecraft:fixed",
-      "biome": "voidstone:void_wastes"
-    }
-  }
-}
+{"type":"minecraft:the_end","generator":{"type":"minecraft:noise","settings":"voidstone:void_terrain","biome_source":{"type":"minecraft:fixed","biome":"voidstone:void_wastes"}}}

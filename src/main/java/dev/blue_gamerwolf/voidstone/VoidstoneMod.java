@@ -5,26 +5,24 @@ import dev.blue_gamerwolf.voidstone.common.enchantment.ModEnchantments;
 import dev.blue_gamerwolf.voidstone.common.item.ModArmorMaterials;
 import dev.blue_gamerwolf.voidstone.common.item.ModBlockItems;
 import dev.blue_gamerwolf.voidstone.common.item.ModItems;
-
+import dev.blue_gamerwolf.voidstone.common.tab.ModCreativeTabs;
+import dev.blue_gamerwolf.voidstone.worldgen.ModWorldgen;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(VoidstoneMod.MODID)
 public class VoidstoneMod {
-
     public static final String MODID = "voidstone";
-
     public VoidstoneMod() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModBlockItems.register(modEventBus);
         ModArmorMaterials.register(modEventBus);
         ModEnchantments.register(modEventBus);
-
+        ModCreativeTabs.register(modEventBus);
+        ModWorldgen.register(modEventBus);
         System.out.println("[Voidstone] Voidstone Core loading...");
     }
-
 }
