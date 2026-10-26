@@ -54,7 +54,7 @@ public final class VoidstoneDataCommands {
                                     });
                                     return Command.SINGLE_SUCCESS;
                                 }))
-                        .then(Commands.literal("data-status")
+                        .then(Commands.literal("status")
                                 .executes(context -> {
                                     VoidstonePlayerData data = VoidstonePlayerData.getInstance();
                                     long lastRefresh = data.getLastSuccessfulRefreshEpochMillis();
