@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "voidstone:block/deepslate_voidstone_ore"
+  }
+}
