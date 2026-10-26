@@ -3,9 +3,11 @@
   "block.voidstone.deepslate_voidstone_ore": "Deepslate Voidstone Ore",
   "block.voidstone.raw_voidstone_block": "Block of Raw Voidstone",
   "block.voidstone.voidstone_block": "Block of Voidstone",
+  "block.voidstone.lost_gateway": "Lost Gateway",
 
   "item.voidstone.raw_voidstone": "Raw Voidstone",
   "item.voidstone.voidstone_ingot": "Voidstone Ingot",
+  "item.voidstone.void_sentinel_core": "Void Sentinel Core",
 
   "item.voidstone.voidstone_helmet": "Voidstone Helmet",
   "item.voidstone.voidstone_chestplate": "Voidstone Chestplate",
@@ -18,5 +20,7 @@
   "item.voidstone.voidstone_shovel": "Voidstone Shovel",
   "item.voidstone.voidstone_hoe": "Voidstone Hoe",
 
+  "enchantment.voidstone.dimensional": "Dimensional",
+  "biome.voidstone.void_wastes": "Void Wastes",
   "itemGroup.voidstone": "Voidstone"
 }
