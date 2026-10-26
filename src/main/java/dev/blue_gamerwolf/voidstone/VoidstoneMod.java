@@ -1,6 +1,7 @@
 package dev.blue_gamerwolf.voidstone;
 
 import dev.blue_gamerwolf.voidstone.common.block.ModBlocks;
+import dev.blue_gamerwolf.voidstone.common.enchantment.ModEnchantments;
 import dev.blue_gamerwolf.voidstone.common.item.ModArmorMaterials;
 import dev.blue_gamerwolf.voidstone.common.item.ModBlockItems;
 import dev.blue_gamerwolf.voidstone.common.item.ModItems;
@@ -21,6 +22,7 @@ public class VoidstoneMod {
         ModBlocks.register(modEventBus);
         ModBlockItems.register(modEventBus);
         ModArmorMaterials.register(modEventBus);
+        ModEnchantments.register(modEventBus);
 
         System.out.println("[Voidstone] Voidstone Core loading...");
     }

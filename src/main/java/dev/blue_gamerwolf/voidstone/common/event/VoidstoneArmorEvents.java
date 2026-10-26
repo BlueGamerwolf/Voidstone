@@ -1,97 +1,192 @@
 package dev.blue_gamerwolf.voidstone.common.event;
 
-import dev.blue_gamerwolf.voidstone.common.item.ModItems;
-
+import dev.blue_gamerwolf.voidstone.VoidstoneMod;
+import dev.blue_gamerwolf.voidstone.common.block.ModBlocks;
+import dev.blue_gamerwolf.voidstone.common.enchantment.ModEnchantments;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = "voidstone")
-public class VoidstoneArmorEvents {
+import java.util.Set;
 
-    private static final double VOID_HEIGHT = -64.0D;
+/**
+ * Handles entry into and return from the Void Dimension.
+ * Entry requires vanilla Netherite armor with Dimensional on all four pieces.
+ * Voidstone armor is deliberately not an entry requirement.
+ */
+@Mod.EventBusSubscriber(modid = VoidstoneMod.MODID)
+public final class VoidstoneArmorEvents {
+    public static final ResourceKey<Level> VOID_DIMENSION = ResourceKey.create(
+            Registries.DIMENSION, new ResourceLocation(VoidstoneMod.MODID, "void_dimension"));
+
+    private static final String DATA_PREFIX = "voidstone_return_";
+    private static final double VOID_TRIGGER_Y = -64.0D;
+    private static final int GATEWAY_X = 16;
+    private static final int GATEWAY_Z = 16;
+
+    private VoidstoneArmorEvents() {
+    }
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        // Run once per tick, at the end of the player's tick.
-        if (event.phase != TickEvent.Phase.END) {
+        if (event.phase != TickEvent.Phase.END || event.player.level().isClientSide()
+                || !(event.player instanceof ServerPlayer player)) {
             return;
         }
 
-        Player player = event.player;
-
-        if (player.level().isClientSide()) {
+        // Keep the last grounded position so returning never sends a player back into the void.
+        if (!player.level().dimension().equals(VOID_DIMENSION) && player.onGround()
+                && player.getY() >= player.level().getMinBuildHeight() + 2) {
+            saveReturnPoint(player);
             return;
         }
 
-        if (!hasFullVoidstoneArmor(player)) {
+        if (player.level().dimension().equals(VOID_DIMENSION)
+                || player.getY() >= VOID_TRIGGER_Y
+                || !hasDimensionalNetherite(player)) {
             return;
         }
 
-        if (player.getY() < VOID_HEIGHT) {
-            if (!(player.level() instanceof ServerLevel level)) {
-                return;
-            }
+        ServerLevel destination = player.server.getLevel(VOID_DIMENSION);
+        if (destination == null) {
+            // If the dimension failed to load, leave vanilla void damage behavior untouched.
+            return;
+        }
 
-            BlockPos safePos = findSafePosition(
-                    level,
-                    player.blockPosition());
+        ensureGateway(destination);
+        BlockPos spawn = findSafeSpawn(destination);
+        player.fallDistance = 0.0F;
+        player.teleportTo(destination, spawn.getX() + 0.5D, spawn.getY(),
+                spawn.getZ() + 0.5D, Set.of(), player.getYRot(), 0.0F);
+        player.fallDistance = 0.0F;
+        player.clearFire();
+    }
 
-            if (safePos != null) {
-                if (level.isEmptyBlock(safePos.below())) {
-                    level.setBlock(
-                            safePos.below(),
-                            Blocks.OBSIDIAN.defaultBlockState(),
-                            3);
+    private static void saveReturnPoint(ServerPlayer player) {
+        CompoundTag data = player.getPersistentData();
+        data.putString(DATA_PREFIX + "dimension", player.level().dimension().location().toString());
+        data.putDouble(DATA_PREFIX + "x", player.getX());
+        data.putDouble(DATA_PREFIX + "y", player.getY());
+        data.putDouble(DATA_PREFIX + "z", player.getZ());
+        data.putFloat(DATA_PREFIX + "yaw", player.getYRot());
+        data.putFloat(DATA_PREFIX + "pitch", player.getXRot());
+    }
+
+    /**
+     * Called by an activated Lost Gateway. Returns false if the player has no saved
+     * safe entry point or the original dimension is unavailable.
+     */
+    public static boolean returnPlayer(ServerPlayer player) {
+        if (!player.level().dimension().equals(VOID_DIMENSION)) {
+            return false;
+        }
+
+        CompoundTag data = player.getPersistentData();
+        ResourceLocation location = ResourceLocation.tryParse(data.getString(DATA_PREFIX + "dimension"));
+        if (location == null || !data.contains(DATA_PREFIX + "x")
+                || !data.contains(DATA_PREFIX + "y") || !data.contains(DATA_PREFIX + "z")) {
+            return false;
+        }
+
+        ResourceKey<Level> dimensionKey = ResourceKey.create(Registries.DIMENSION, location);
+        ServerLevel destination = player.server.getLevel(dimensionKey);
+        if (destination == null) {
+            return false;
+        }
+
+        double x = data.getDouble(DATA_PREFIX + "x");
+        double y = data.getDouble(DATA_PREFIX + "y");
+        double z = data.getDouble(DATA_PREFIX + "z");
+        float yaw = data.getFloat(DATA_PREFIX + "yaw");
+        float pitch = data.getFloat(DATA_PREFIX + "pitch");
+
+        player.fallDistance = 0.0F;
+        player.teleportTo(destination, x, y, z, Set.of(), yaw, pitch);
+        player.fallDistance = 0.0F;
+        player.clearFire();
+        return true;
+    }
+
+    /**
+     * A single, fixed gateway site prevents duplicate gateways being created for
+     * every player. The activation state is preserved once the gateway is repaired.
+     */
+    private static void ensureGateway(ServerLevel level) {
+        int surfaceY = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, GATEWAY_X, GATEWAY_Z);
+        BlockPos gatewayPos = new BlockPos(GATEWAY_X, surfaceY, GATEWAY_Z);
+        if (level.getBlockState(gatewayPos).is(ModBlocks.LOST_GATEWAY.get())) {
+            return;
+        }
+
+        // Clear only the gateway's footprint above the terrain.
+        for (int x = GATEWAY_X - 2; x <= GATEWAY_X + 2; x++) {
+            for (int y = surfaceY; y <= surfaceY + 5; y++) {
+                for (int z = GATEWAY_Z - 1; z <= GATEWAY_Z + 1; z++) {
+                    level.setBlock(new BlockPos(x, y, z), Blocks.AIR.defaultBlockState(), 3);
                 }
-
-                player.teleportTo(
-                        safePos.getX() + 0.5D,
-                        safePos.getY(),
-                        safePos.getZ() + 0.5D);
-
-                player.fallDistance = 0.0F;
-                player.setHealth(player.getMaxHealth());
-                player.clearFire();
             }
         }
-    }
 
-    private static BlockPos findSafePosition(
-            ServerLevel level,
-            BlockPos start) {
-        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(
-                start.getX(),
-                level.getMaxBuildHeight() - 1,
-                start.getZ());
-
-        while (pos.getY() > level.getMinBuildHeight()) {
-            if (!level.isEmptyBlock(pos)) {
-                return pos.above().immutable();
+        // Damaged obsidian arch: deliberately broken at the upper-right corner.
+        for (int y = surfaceY; y <= surfaceY + 4; y++) {
+            level.setBlock(new BlockPos(GATEWAY_X - 2, y, GATEWAY_Z),
+                    (y == surfaceY + 2 ? Blocks.CRYING_OBSIDIAN : Blocks.OBSIDIAN).defaultBlockState(), 3);
+            if (y != surfaceY + 4) {
+                level.setBlock(new BlockPos(GATEWAY_X + 2, y, GATEWAY_Z),
+                        Blocks.OBSIDIAN.defaultBlockState(), 3);
             }
-
-            pos.move(0, -1, 0);
         }
-
-        return level.getSharedSpawnPos();
+        for (int x = GATEWAY_X - 2; x <= GATEWAY_X + 2; x++) {
+            if (x != GATEWAY_X + 2) {
+                level.setBlock(new BlockPos(x, surfaceY + 4, GATEWAY_Z),
+                        Blocks.OBSIDIAN.defaultBlockState(), 3);
+            }
+        }
+        level.setBlock(gatewayPos, ModBlocks.LOST_GATEWAY.get().defaultBlockState(), 3);
     }
 
-    private static boolean hasFullVoidstoneArmor(Player player) {
-        ItemStack helmet = player.getInventory().getArmor(3);
-        ItemStack chest = player.getInventory().getArmor(2);
-        ItemStack legs = player.getInventory().getArmor(1);
-        ItemStack boots = player.getInventory().getArmor(0);
-
-        return helmet.is(ModItems.VOIDSTONE_HELMET.get())
-                && chest.is(ModItems.VOIDSTONE_CHESTPLATE.get())
-                && legs.is(ModItems.VOIDSTONE_LEGGINGS.get())
-                && boots.is(ModItems.VOIDSTONE_BOOTS.get());
+    private static boolean hasDimensionalNetherite(ServerPlayer player) {
+        return hasDimensionalPiece(player.getItemBySlot(EquipmentSlot.HEAD), Items.NETHERITE_HELMET)
+                && hasDimensionalPiece(player.getItemBySlot(EquipmentSlot.CHEST), Items.NETHERITE_CHESTPLATE)
+                && hasDimensionalPiece(player.getItemBySlot(EquipmentSlot.LEGS), Items.NETHERITE_LEGGINGS)
+                && hasDimensionalPiece(player.getItemBySlot(EquipmentSlot.FEET), Items.NETHERITE_BOOTS);
     }
 
+    private static boolean hasDimensionalPiece(ItemStack stack, Item expectedItem) {
+        return stack.is(expectedItem)
+                && EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.DIMENSIONAL.get(), stack) >= 1;
+    }
+
+    private static BlockPos findSafeSpawn(ServerLevel level) {
+        for (int radius = 0; radius <= 32; radius += 4) {
+            int step = Math.max(1, radius);
+            for (int x = -radius; x <= radius; x += step) {
+                for (int z = -radius; z <= radius; z += step) {
+                    int surfaceY = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+                    BlockPos feet = new BlockPos(x, surfaceY, z);
+                    if (level.getBlockState(feet.below()).isSolid()
+                            && level.getBlockState(feet).isAir()
+                            && level.getBlockState(feet.above()).isAir()) {
+                        return feet;
+                    }
+                }
+            }
+        }
+        return new BlockPos(0, Math.max(100, level.getMinBuildHeight() + 16), 0);
+    }
 }
