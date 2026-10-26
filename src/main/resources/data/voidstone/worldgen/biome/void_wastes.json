@@ -3,10 +3,10 @@
   "temperature": 0.7,
   "downfall": 0.0,
   "effects": {
-    "fog_color": 2236962,
-    "sky_color": 1315860,
-    "water_color": 1973790,
-    "water_fog_color": 657930
+    "fog_color": 197379,
+    "sky_color": 0,
+    "water_color": 131586,
+    "water_fog_color": 263172
   },
   "spawners": {
     "ambient": [],
