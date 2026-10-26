@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
@@ -33,8 +34,14 @@ public final class VoidSkyRenderer {
 
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_SKY
-                || !event.getLevel().dimension().location().equals(VOID_DIMENSION)) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_SKY) {
+            return;
+        }
+
+        // RenderLevelStageEvent in Forge 1.20.1 does not expose getLevel().
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.level == null
+                || !minecraft.level.dimension().location().equals(VOID_DIMENSION)) {
             return;
         }
 
@@ -83,7 +90,7 @@ public final class VoidSkyRenderer {
         poseStack.popPose();
     }
 
-    private static void quad(BufferBuilder buffer, PoseStack.Pose pose, float x, float y, float z,
+    private static void quad(BufferBuilder buffer, org.joml.Matrix4f pose, float x, float y, float z,
                              float width, float height, float red, float green, float blue, float alpha) {
         float halfWidth = width * 0.5F;
         float halfHeight = height * 0.5F;
