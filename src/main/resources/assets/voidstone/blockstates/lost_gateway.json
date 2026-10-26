@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "activated=false": { "model": "voidstone:block/lost_gateway" },
+    "activated=true": { "model": "voidstone:block/lost_gateway_activated" }
+  }
+}
