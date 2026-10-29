@@ -1,7 +1,0 @@
-mixin {
-    add sourceSets.main, 'voidstone.refmap.json'
-    config 'voidstone.mixins.json'
-
-    debug.verbose = true
-    debug.export = true
-}
