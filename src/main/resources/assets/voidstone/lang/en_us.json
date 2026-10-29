@@ -1,0 +1,26 @@
+{
+  "block.voidstone.voidstone_ore": "Voidstone Ore",
+  "block.voidstone.deepslate_voidstone_ore": "Deepslate Voidstone Ore",
+  "block.voidstone.raw_voidstone_block": "Block of Raw Voidstone",
+  "block.voidstone.voidstone_block": "Block of Voidstone",
+  "block.voidstone.lost_gateway": "Lost Gateway",
+
+  "item.voidstone.raw_voidstone": "Raw Voidstone",
+  "item.voidstone.voidstone_ingot": "Voidstone Ingot",
+  "item.voidstone.void_sentinel_core": "Void Sentinel Core",
+
+  "item.voidstone.voidstone_helmet": "Voidstone Helmet",
+  "item.voidstone.voidstone_chestplate": "Voidstone Chestplate",
+  "item.voidstone.voidstone_leggings": "Voidstone Leggings",
+  "item.voidstone.voidstone_boots": "Voidstone Boots",
+
+  "item.voidstone.voidstone_sword": "Voidstone Sword",
+  "item.voidstone.voidstone_pickaxe": "Voidstone Pickaxe",
+  "item.voidstone.voidstone_axe": "Voidstone Axe",
+  "item.voidstone.voidstone_shovel": "Voidstone Shovel",
+  "item.voidstone.voidstone_hoe": "Voidstone Hoe",
+
+  "enchantment.voidstone.dimensional": "Dimensional",
+  "biome.voidstone.void_wastes": "Void Wastes",
+  "itemGroup.voidstone": "Voidstone"
+}

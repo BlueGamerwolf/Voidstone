@@ -1,0 +1,11 @@
+{
+  "type": "voidstone:void_dimension",
+  "generator": {
+    "type": "minecraft:noise",
+    "settings": "draft:void_terrain",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "voidstone:void_wastes"
+    }
+  }
+}

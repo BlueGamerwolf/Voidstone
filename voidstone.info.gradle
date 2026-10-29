@@ -1,0 +1,45 @@
+ext {
+mod_id = "voidstone"
+mod_name = "Voidstone"
+mod_version = "1.0.0"
+voidstone_name = "Voidstone-${mod_version}"
+mod_group_id = "dev.blue_gamerwolf"
+mod_license = "MIT"
+mod_authors = "Blue_gamerwolf"
+
+
+mod_description = """
+Voidstone Core is the foundation library for all Voidstone mods.
+
+Provides APIs, networking, configuration, and Voidstone ecosystem integration.
+"""
+
+
+}
+
+tasks.named('processResources', ProcessResources).configure {
+def replaceProperties = [
+minecraft_version      : minecraft_version,
+minecraft_version_range: minecraft_version_range,
+forge_version          : forge_version,
+forge_version_range    : forge_version_range,
+loader_version_range   : loader_version_range,
+mod_id                 : mod_id,
+mod_name               : mod_name,
+mod_license            : mod_license,
+mod_version            : mod_version,
+mod_authors            : mod_authors,
+mod_description        : mod_description
+]
+
+
+inputs.properties replaceProperties
+
+filesMatching([
+        'META-INF/mods.toml',
+        'pack.mcmeta'
+]) 
+    {
+        expand replaceProperties
+    }
+}

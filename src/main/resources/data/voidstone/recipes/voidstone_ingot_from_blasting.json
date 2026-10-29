@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:blasting",
+  "ingredient": {
+    "item": "voidstone:raw_voidstone"
+  },
+  "result": "voidstone:voidstone_ingot",
+  "experience": 1.0,
+  "cookingtime": 100
+}

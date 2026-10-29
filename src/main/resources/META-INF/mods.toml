@@ -1,0 +1,136 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+authors="${mod_authors}"
+description='''${mod_description}'''
+
+# Forge dependency
+
+[[dependencies.${mod_id}]]
+modId="forge"
+mandatory=true
+versionRange="${forge_version_range}"
+ordering="NONE"
+side="BOTH"
+
+# Minecraft dependency
+
+[[dependencies.${mod_id}]]
+modId="minecraft"
+mandatory=true
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"
+
+# Tectonic
+
+[[dependencies.${mod_id}]]
+modId="tectonic"
+mandatory=true
+versionRange="[1.0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Flux Networks
+
+[[dependencies.${mod_id}]]
+modId="fluxnetworks"
+mandatory=true
+versionRange="[1.0,)"
+ordering="AFTER"
+side="BOTH"
+
+# AE2 Infinity Booster
+
+[[dependencies.${mod_id}]]
+modId="aeinfinitybooster"
+mandatory=true
+versionRange="[1.0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Applied Energistics 2 Wireless Terminals
+
+[[dependencies.${mod_id}]]
+modId="ae2wtlib"
+mandatory=true
+versionRange="[1.0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Applied Energistics 2
+
+[[dependencies.${mod_id}]]
+modId="ae2"
+mandatory=true
+versionRange="[15.0.0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Extreme Reactors
+
+[[dependencies.${mod_id}]]
+modId="bigreactors"
+mandatory=true
+versionRange="[1.0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Lithostitched
+
+[[dependencies.${mod_id}]]
+modId="lithostitched"
+mandatory=true
+versionRange="[1.0,)"
+ordering="AFTER"
+side="BOTH"
+
+# GuideME
+
+[[dependencies.${mod_id}]]
+modId="guideme"
+mandatory=true
+versionRange="[1.0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Curios API
+
+[[dependencies.${mod_id}]]
+modId="curios"
+mandatory=true
+versionRange="[5.0.0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Architectury API
+
+[[dependencies.${mod_id}]]
+modId="architectury"
+mandatory=true
+versionRange="[9.0.0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Cloth Config API
+
+[[dependencies.${mod_id}]]
+modId="cloth_config"
+mandatory=true
+versionRange="[11.0.0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Shatter world limit
+
+[[dependencies.${mod_id}]]
+modId="swl"
+mandatory=true
+versionRange="[0.2.1,)"
+ordering="AFTER"
+side="BOTH"

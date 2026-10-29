@@ -1,0 +1,62 @@
+{
+  "world": "voidstone:void_dimension",
+  "id": "void_scape",
+  "cloud_settings": {
+    "cloud": false,
+    "cloud_height": 0
+  },
+  "rain": false,
+  "custom_vanilla_objects": {
+    "sun": false,
+    "sun_texture": "",
+    "sun_height": 0,
+    "sun_size": 0,
+    "moon": false,
+    "moon_phase": false,
+    "moon_texture": "",
+    "moon_height": 0,
+    "moon_size": 0
+  },
+  "stars": {
+    "vanilla": true,
+    "moving_stars": true,
+    "count": 2500,
+    "all_days_visible": true,
+    "scale": 2,
+    "color": [
+      180,
+      150,
+      255
+    ],
+    "shooting_stars": {
+      "percentage": 10,
+      "random_lifetime": [
+        10,
+        50
+      ],
+      "scale": 2,
+      "speed": 6,
+      "color": [
+        100,
+        80,
+        255
+      ],
+      "rotation": 6
+    }
+  },
+  "sky_type": "OVERWORLD",
+  "sky_color": {
+    "custom_color": true,
+    "color": [
+      12,
+      3,
+      32,
+      255
+    ]
+  },
+  "sky_objects": [],
+  "constellations": [],
+  "condition": {
+    "condition": false
+  }
+}

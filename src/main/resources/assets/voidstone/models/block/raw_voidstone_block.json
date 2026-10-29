@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "voidstone:block/raw_voidstone_block"
+  }
+}

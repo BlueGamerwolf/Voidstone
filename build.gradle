@@ -1,0 +1,43 @@
+buildscript {
+    repositories {
+        maven {
+            url = 'https://repo.spongepowered.org/repository/maven-public/'
+        }
+        maven {
+            url = 'https://maven.minecraftforge.net/'
+        }
+        gradlePluginPortal()
+    }
+
+    dependencies {
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+    }
+}
+
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+}
+
+apply plugin: 'org.spongepowered.mixin'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
+}
+
+apply from: 'voidstone.dependencies.gradle'
+apply from: 'voidstone.info.gradle'
+apply from: 'voidstone.jar.gradle'
+
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+}
+
+apply from: 'voidstone.mixin.gradle'

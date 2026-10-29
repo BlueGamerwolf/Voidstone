@@ -1,0 +1,17 @@
+repositories {
+    mavenCentral()
+
+    maven {
+        name = "CurseMaven"
+        url = uri("https://www.cursemaven.com")
+
+        content {
+            includeGroup("curse.maven")
+        }
+    }
+}
+
+dependencies {
+    // Minecraft and Forge
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+}

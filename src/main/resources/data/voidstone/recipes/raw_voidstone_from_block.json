@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "voidstone:raw_voidstone_block"
+    }
+  ],
+  "result": {
+    "item": "voidstone:raw_voidstone",
+    "count": 9
+  }
+}
