@@ -1,0 +1,1 @@
+{"feature":"voidstone:void_ruins","placement":[{"type":"minecraft:rarity_filter","chance":18},{"type":"minecraft:in_square"},{"type":"minecraft:heightmap","heightmap":"WORLD_SURFACE_WG"},{"type":"minecraft:biome"}]}
